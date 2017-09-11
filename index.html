@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>点赞</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- <button class="like-btn">
+            <span class="like-text">点赞</span>
+            <span>👍</span>
+        </button> -->
+    </div>
+    <script>
+        // const button = document.querySelector('.like-btn')
+        // const buttonText = button.querySelector('.like-text')
+        // let isLiked = false
+        // button.addEventListener('click', () => {
+        //     isLiked = !isLiked
+        //     if (isLiked) {
+        //         buttonText.innerHTML = '取消'
+        //     } else {
+        //         buttonText.innerHTML = '点赞'
+        //     }
+        // }, false)
+
+        // 问题? DOM化 更底层 现代编程可以去DOM化 构建一个虚拟DOM结点
+        // react react-dom 
+        // 复用 在js中类化<==>React|Vue-->Component
+
+        // .vue .jsx 都是为了方便 优势强于一般的类化 
+        // 事件? DOM
+        // const createDOMFromString = (domString) => {
+        //     const div = document.createElement('div')
+        //     div.innerHTML = domString
+        //     return div
+        // }
+        // class LikeButton {
+        //     // 如何表达状态 状态是对象的一个属性 json字面量
+        //     constructor () {
+        //         this.state = {
+        //             isLiked: false
+        //         }
+        //     }
+        //     render () {
+        //         this.el = createDOMFromString(`
+        //             <button id="like-btn">
+        //                 <span class="like-text">${this.state.isLiked?'取消':'点赞'}</span>
+        //                 <span>👍</span>
+        //             </button>
+        //         `)
+        //         // this.el.addEventListener('click', () => console.log('cilck'), false)
+        //         this.el.addEventListener('click', this.changeLikeText.bind(this), false)
+        //         return this.el
+        //     }
+        //     setState (state) {
+        //         this.state = state
+        //         const oldEl = this.el
+        //         // newEl
+        //         this.el = this.render()
+        //         if (this.onStateChange) this.onStateChange(oldEl, this.el)
+        //     }
+        //     changeLikeText () {
+        //         this.setState({
+        //             isLiked: !this.state.isLiked
+        //         })
+        //         // const likeText = this.el.querySelector('.like-text')
+        //         // this.state.isLiked = !this.state.isLiked
+        //         // 实现状态改变->界面也随之改变？再执行一次render
+                
+        //         // likeText.innerHTML = this.state.isLiked?'取消':'点赞'
+        //     }
+        // } 
+        // const wrapper = document.querySelector('.wrapper')
+        // const likeButton = new LikeButton()
+        // wrapper.appendChild(likeButton.render())
+        // // 老的结点 仍然在dom上 新的结点已经准备好 没有挂载上去
+        // likeButton.onStateChange = (oldEl, newEl) => {
+        //     wrapper.insertBefore(newEl, oldEl)
+        //     wrapper.removeChild(oldEl)
+        // }
+        // const likeButton2 = new LikeButton()
+        // wrapper.innerHTML += likeButton2.render()
+        // DOM结点的部分更新 hot-reload
+        // 虚拟dom更新 一定得更新后 同步到dom结点
+        // style.display style.fontSize style.webkitTransform
+        // 界面就产生了状态 
+
+        const createDOMFromString = (domString) => {
+            const div = document.createElement('div')
+            div.innerHTML = domString
+            return div
+        }
+        const mount = (component, wrapper) => {
+            wrapper.appendChild(component._renderDOM())
+            component.onStateChange = (oldEl, newEl) => {
+                wrapper.insertBefore(newEl, oldEl)
+                wrapper.removeChild(oldEl)
+            }
+        }
+        class Component {
+            // 有可能不传 就给个默认值props={}
+            constructor (props={}) {
+                this.props = props
+                console.log('父类构造函数')
+            }
+            setState (state) {
+                const oldEl = this.el
+                this.state = state
+                this.el = this._renderDOM()
+                // 动态语言 可以在运行过程中动态添加方法或属性
+                if (this.onStateChange) {
+                    this.onStateChange(oldEl, this.el)
+                }
+            }
+            _renderDOM () {
+                // 子类 一定得提供render方法
+                // 解放了render 只需要UI，html
+                this.el = createDOMFromString(this.render())
+                if (this.onClick) {
+                    this.el.addEventListener('click', this.onClick.bind(this), false)
+                }
+                return this.el
+            }
+        }
+        class LikeButton extends Component {
+            constructor (props) {
+                super(props)
+                this.state = {
+                    isLiked: false
+                }
+            }
+            onClick () {
+                this.setState({
+                    isLiked: !this.state.isLiked
+                })
+            }
+            render () {
+                return `
+                    <button id="like-btn" style="background-color:${this.props.bgColor}">
+                        <span class="like-text">${this.state.isLiked?'取消':'点赞'}</span>
+                        <span>👍</span>
+                    </button>
+                `
+            }
+        }
+        mount(new LikeButton({bgColor: "yellow"}), document.querySelector('.wrapper'))
+    </script>
+</body>
+</html>
