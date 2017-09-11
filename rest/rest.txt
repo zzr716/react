@@ -1,0 +1,36 @@
+
+rest api 针对接口
+前端 通信API（取数据）后端
+这是一种取数据的风格
+网络后端提供资源查询服务的
+一切皆是资源 服务器保存资源 
+客户端请求资源
+URL设计
+URL control层 VueRouter的routes
+URL还是资源的唯一识别符
+/comments
+/comments/:id 可以通过req.params.id得到
+/posts/:id/comments/:id 某篇文章下的评论
+/profile/:name
+
+同一个资源 可以有不同的表达形式
+将资源进行转化 使用相应的HTTP动词表示
+HTTP动词 SQL方法 　操作
+GET      SELECT 　READ
+POST     INSERT 　CREATE
+PUT　　　UPDATE   UPDATE
+DELETE   DELETE   DELETE
+
+GET /v1(第一个版本)/comments/:id 
+POST /v1/comments  这时候id++
+PUT /v1/comments/:id 更新
+DELETE　/v1/comments/:id 删除
+
+querystring 查询字符串
+约束条件
+/comments?limit=10&start=30
+REST API 
+Resource 资源
+Representation 表现层 URL 设计
+State 状态
+Transfer 转换
